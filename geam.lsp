@@ -9,7 +9,7 @@
 
 
 
-(defun getManualDistance(x)
+(defun getManualDistance(x / dist finalDist)
      (cond 
           (
                (= x 1)
@@ -67,7 +67,7 @@
 )
 
 
-(defun getSomeDistance ()
+(defun getSomeDistance (/ dist alegere)
      (setq alegere (getint "----->  1 - Introdu manual.\n----->  2 - Alege cu mouseul.\n"))
      (if (or (= alegere 1) (= alegere 2))
          (progn 
@@ -88,7 +88,7 @@
 
 
 
-(defun c:gg(/ )
+(defun c:gg(/ a b startBaza endBaza offsetDirection finalDistance lst offsetLine startSecond endSecond )
 
      (setq a (car (entsel "\nSelecteaza linia:\n")))
      (setq b (cdr (entget a)))
