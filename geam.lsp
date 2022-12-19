@@ -1,96 +1,45 @@
-;;08-11-2022 13.33
 
-;;;; Program realizare geamuri automate pentru autocad
-;;;; Explicatie:
-;;;; 1. Alegeti linia pentru offset
-;;;; 2. Alegeti directia de offset (clic pe partea in care se doreste offset pt fereastra)
-;;;; 3. Alege daca introduci manual distanta de offset sau o iei cu mousel. ( poti alege doar 1 sau 2 )
-;;;; 4. 
+(setq layerNameUsiGeam "UsiGeamuri")
+(setq layerColorUsiGeam 3)
 
 
-
-(defun getManualDistance(x / dist finalDist)
+(defun getManualDistance(/ dist finalDist)
+     (setq dist (getdist "Alege distanta din desen sau introdu manual >>> "))
+     (terpri)
      (cond 
           (
-               (= x 1)
-               (progn 
-                    (setq dist (getreal "Introdu distanta >>> "))
-                    (cond 
-                         (
-                              (<= dist 0)
-                              (progn
-                                   (princ "Distanta trebuie sa fie mai mare ca zero\n")
-                                   (getManualDistance 1)
-                              )
-                         )
-                         (
-                              (= dist nil)
-                              (progn
-                                   (princ "Trebuie sa introduci o valoare. Nu poate fi gol\n")
-                                   (getManualDistance 1)
-                              )
-                         )
-                         (
-                              (> dist 0)
-                              (setq finalDist (rtos dist))
-                         )
-                    )
-               );progn
+               (<= dist 0)
+               (progn
+                    (princ "Distanta trebuie sa fie mai mare ca zero\n")
+                    (terpri)
+                    (getManualDistance)
+               )
           )
           (
-               (= x 2)
-               (progn 
-                    (setq dist (getdist "Alege distanta din desen >>> "))
-                    (cond 
-                         (
-                              (<= dist 0)
-                              (progn
-                                   (princ "Distanta trebuie sa fie mai mare ca zero\n")
-                                   (getManualDistance 2)
-                              )
-                         )
-                         (
-                              (= dist nil)
-                              (progn
-                                   (princ "Trebuie sa alegi o valoare\n")
-                                   (getManualDistance 2)
-                              )
-                         )
-                         (
-                              (> dist 0)
-                              (setq finalDist (rtos dist))
-                         )
-                    )
-               );progn
+               (= dist nil)
+               (progn
+                    (princ "Trebuie sa alegi o valoare\n")
+                    (terpri)
+                    (getManualDistance)
+               )
+          )
+          (
+               (> dist 0)
+               (setq finalDist (rtos dist))
           )
      )
 )
 
 
-(defun getSomeDistance (/ dist alegere)
-     (setq alegere (getint "----->  1 - Introdu manual.\n----->  2 - Alege cu mouseul.\n"))
-     (if (or (= alegere 1) (= alegere 2))
-         (progn 
-               (cond 
-                    (
-                         (= alegere 1)
-                         (setq dist (getManualDistance 1))
-                    )
-                    (
-                         (= alegere 2)
-                         (setq dist (getManualDistance 2))
-                    )
-               );cond
-         ) ;progn
-         (getSomeDistance) 
-     );if
-)
-
-
 
 (defun c:gg(/ a b startBaza endBaza offsetDirection finalDistance lst offsetLine startSecond endSecond )
-
+     ;; Create layer for doors and windows if not exists
+     (setq currentLayer (getvar "clayer"))
+     (command "_.Layer" "_Make" layerNameUsiGeam "_Color" layerColorUsiGeam "" "LType" "Continuous" "" "")
+     
      (setq a (car (entsel "\nSelecteaza linia:\n")))
+     (command "_.chprop" "_si" a "_color" "ByLayer" "")
+     (command "_.chprop" "_si" a "_layer" layerNameUsiGeam "")
      (setq b (cdr (entget a)))
      ; coo baza start
      (setq startBaza (cdr (assoc 10 b)))
@@ -98,7 +47,7 @@
      (setq endBaza (cdr (assoc 11 b)))
 
      (setq offsetDirection (getPoint "Directia de offset >\n"))
-     (setq finalDistance (getSomeDistance))
+     (setq finalDistance (getManualDistance))
 
      (command "offset" finalDistance a offsetDirection "")
 
@@ -109,11 +58,12 @@
      ;;;;;;; coo secund end
      (setq endSecond (cdr (assoc 11 offsetLine)))
 
-     (command "line" startBaza startSecond "")
-     (command "line" endBaza endSecond "")
+     (entmake (list (cons 0 "line")(cons 10 startBaza)(cons 11 startSecond)(cons 8 layerNameUsiGeam)))
+     (entmake (list (cons 0 "line")(cons 10 endBaza)(cons 11 endSecond)(cons 8 layerNameUsiGeam)))
      (command "offset" (/ (atof finalDistance) 2) a offsetDirection "")
 
      ;;;;;;;;; comenteaza randul de mai jos daca vrei sa lasi si linia opusa
      (command "erase" lst "")
+     (setvar "clayer" currentLayer)
      (princ)
 )

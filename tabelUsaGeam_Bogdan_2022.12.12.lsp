@@ -4,6 +4,7 @@
 
 
 
+
 (setq textHeight 0.25)
 (setq rowHeight (* textHeight 1.28)) ; 0.32
 (setq padding (/ (- rowHeight textHeight) 2)) ; 0.2048

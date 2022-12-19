@@ -1,30 +1,37 @@
-
-
+;; pentru Mocanu
 ;; 2022.12.12-12.32 - mod window to go back to previous layer after window is created
 
 
 
-(setq textHeight 0.25)
-(setq rowHeight (* textHeight 1.28)) ; 0.32
-(setq padding (/ (- rowHeight textHeight) 2)) ; 0.2048
-(setq rowLength (* rowHeight 43.75))  ; 14
+(setq textStyle "STYLE2")
+
+
+
+(setq textHeight 0.2)
+(setq rowHeight (* textHeight 2.5)) 
+(setq padding (/ (- rowHeight textHeight) 2))
+(setq rowLength (* rowHeight 18.82))
 (setq textContentCamera "Camera")
 (setq textContentBalcon "Balcon")
-(setq headerHeight (* rowHeight 2.5)) ; 0.8
+(setq headerHeight (* rowHeight 0.88))
 
 ;; position for vertical lines
-(setq offsetLinieNumeCamera (* rowHeight 8.515))  ; 2.7248
-(setq offsetLinieSuprafata (* rowHeight 25.39))   ; 8.1248
+(setq offsetLinieNumeCamera (* rowHeight 4.3)) 
+(setq offsetLinieSuprafata (* rowHeight 11.44)) 
+
 ;; position for text
-(setq offsetTextIdCamera (* rowHeight 3.515))     ; 1.1248
-(setq offsetTextNumeCamera (* rowHeight 13.828))  ; 4.42496
-(setq offsetTextSuprafata (* rowHeight 32.578))   ; 10.42496
+;; id camera (1,2,3...)
+(setq offsetTextIdCamera (* rowHeight 2))
+;; Camera,Camera...
+(setq offsetTextNumeCamera (* rowHeight 5.14))
+;; text suprafata propriu-zisa
+(setq offsetTextSuprafata (* rowHeight 14.8))
 
 
-;; inner things
-(setq innerTextHeight (/ rowHeight 1.6))        ; 0.2
-(setq innerSmallCircleRadius (/ rowHeight 2))   ; 0.16
-(setq innerLargeCircleRadius (/ rowHeight 1.6)) ; 0.2
+;; inner things from camera (text and circle)
+(setq innerTextHeight (/ rowHeight 1.6))
+(setq innerSmallCircleRadius (/ rowHeight 2))
+(setq innerLargeCircleRadius (/ rowHeight 1.6))
 
 (setq globalVarLeft (list 0.0 0.0))
 (setq globalVarRight (list 10.0 0.0))
@@ -35,19 +42,31 @@
 (setq layerName "Tabel")
 (setq layerColor 7)
 
-(setq autoExecutant (* rowHeight 8.594))    ; 2.75
-(setq autoName (* rowHeight 5.234))         ; 1.67
-(setq autoDetails (* rowHeight 3.125))      ; 1
-(setq autoDateTop (* rowHeight 35.938))     ; 11.50
-(setq autoDateMiddle (* rowHeight 31.484))  ; 10.07
-(setq autoDateBottom autoDateTop)
-(setq autoReceptionat (* rowHeight 8.359))  ; 2.67
+(setq autoExecutant (* rowHeight 0.24))
+(setq textExecutant "Executant: PFA Mocanu Corneliu")
+(setq autoSemnaturaStampila (* rowHeight 0.32))
+(setq autoDetails (* rowHeight 3.125))
+;; Data: 11.11.2022
+(setq autoDateTop (* rowHeight 12.78))
+(setq autoDateBottom (* rowHeight 8.62))
+(setq autoReceptionat (* rowHeight 0.24))
 
 (setq footerSerieAutorizat "SERIA CT NR.116, CATEGORIILE B/C")
-(setq footerNumeAutorizat "RUSU BOGDAN-ADRIAN")
+(setq footerSemnaturaStampila "(semnatura, stampila)")
+(setq textSemnaturaParafa "(semnatura,parafa)")
 (setq footerReceptionat "Receptionat,")
 (setq footerDateTopBottom "Data")
 (setq footerDateMiddle "Data: 11.11.2022")
+
+
+(defun c:xxx()
+    (load "tabelUsaGeam_002.lsp")
+    ;; (alert "Loaded")
+    (princ "\nReload successful")
+    (princ)
+)
+
+
 
 
 (defun getAreaText(ent coo / textLocation w lst counterArea alinarea x1 y1 x2 y2 tempOne finalArea)
@@ -82,7 +101,7 @@
         (setq counterArea (1+ counterArea))
     )
     (setq finalArea (atof (rtos (abs (/ alinarea 2)) 2 1)))
-    (entmake (list (cons 0 "text")(cons 10 textLocation)(cons 1 (rtos finalArea 2 1))(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)))
+    (entmake (list (cons 0 "text")(cons 10 textLocation)(cons 1 (rtos finalArea 2 1))(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)(cons 7 textStyle)))
     (setq suprafataUtila ( + suprafataUtila finalArea))
 )
 
@@ -101,22 +120,20 @@
         (setq circleLocation (list (+ (car textLoc) (/ innerSmallCircleRadius 2)) (+ (cadr textLoc) (/ innerSmallCircleRadius 1.673))))
       )
   )
-  ;; (setq innerTextLocation (list (- (car textLoc) (/ cRadius 2))(- (cadr textLoc) (/ cRadius 2))))
-  (setq createText (entmake (list (cons 0 "text")(cons 1 roomNumber)(cons 10 textLoc)(cons 40 innerTextHeight)(cons 62 layerColor)(cons 8 layerName))))
+  (setq createText (entmake (list (cons 0 "text")(cons 1 roomNumber)(cons 10 textLoc)(cons 40 innerTextHeight)(cons 62 layerColor)(cons 8 layerName)(cons 7 textStyle))))
   (entmake (list (cons 0 "circle")(cons 10 circleLocation)(cons 40 cRadius)(cons 62 layerColor)(cons 8 layerName)))
 )
 
 
 
-(defun createHeader(x / topLeftCorner one two strt1 three plr_1 plr_2 plr_3 plr_4 plr_text1 plr_text2 text1 text2 text3 text4 text5 text6 plr_text3 plr_text4 plr_text5 plr_text6 plr_text7 plr_text8 plr_text9 plr_text10 plr_text11 plr_text12 )
+(defun createHeader(x / two strt1 plr_1 plr_2 plr_3 plr_4 plr_text1 plr_text2 text1 text2 text3 text4 text5 text6 plr_text3 plr_text4 plr_text5 plr_text6 plr_text7 plr_text8 plr_text9 plr_text10 plr_text11 plr_text12 )
       ;; margin lines of header (top left, top middle, top right)
       (setq topLeftCorner (polar x (angtof "0") headerHeight))
-      (setq one (entmake (list (cons 0 "line")(cons 10 x)(cons 11 topLeftCorner )(cons 62 layerColor)(cons 8 layerName))))
+
       ;end coo of one, start of strt
-      (setq strt (cdr (caddr one)))
-      (setq two (entmake (list (cons 0 "line")(cons 10 strt)(cons 11 (polar strt (angtof "90") rowLength) )(cons 62 layerColor)(cons 8 layerName))))
+      ;; most top horizontal line 
+      (setq two (entmake (list (cons 0 "line")(cons 10 topLeftCorner)(cons 11 (polar topLeftCorner (angtof "90") rowLength) )(cons 62 layerColor)(cons 8 layerName))))
       (setq strt1 (cdr (caddr two)))
-      (setq three (entmake (list (cons 0 "line")(cons 10 strt1)(cons 11 (polar strt1 (angtof "180") headerHeight))(cons 62 layerColor)(cons 8 layerName))))
       ;create separators between id name and area (vertical lines)
       (setq plr_1 (polar x (angtof "90") offsetLinieNumeCamera))
       (setq plr_2 (polar plr_1 (angtof "0") headerHeight))
@@ -126,30 +143,19 @@
       (entmake (list (cons 0 "line")(cons 10 plr_3)(cons 11 plr_4)(cons 62 layerColor)(cons 8 layerName)))
 
       ; add text to the boxes created
-      (setq plr_text1 (polar x (angtof "90") (* rowHeight 1.641)))
-      (setq plr_text2 (polar plr_text1 (angtof "0") (* rowHeight 0.391)))
-      (setq text1 (entmake (list (cons 0 "text")(cons 10 plr_text2)(cons 1 "incapere")(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName))))
-      (setq plr_text3 (polar x (angtof "90") (* rowHeight 2.968)))
-      (setq plr_text4 (polar plr_text3 (angtof "0") (* rowHeight 1.401)))
-      (setq text2 (entmake (list (cons 0 "text")(cons 10 plr_text4)(cons 1 "Nr.")(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName))))
-      (setq plr_text5 (polar x (angtof "90") (* rowHeight 13.671)))
-      (setq plr_text6 (polar plr_text5 (angtof "0") (* rowHeight 1.401)))
-      (setq text3 (entmake (list (cons 0 "text")(cons 10 plr_text6)(cons 1 "Denumire")(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName))))
-      (setq plr_text7 (polar x (angtof "90") (* rowHeight 14.06)))
-      (setq plr_text8 (polar plr_text7 (angtof "0") (* rowHeight 0.391)))
-      (setq text4 (entmake (list (cons 0 "text")(cons 10 plr_text8)(cons 1 "incapere")(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName))))
-      (setq plr_text9 (polar x (angtof "90") (* rowHeight 30.625)))
-      (setq plr_text10 (polar plr_text9 (angtof "0") (* rowHeight 1.401)))
-      (setq text5 (entmake (list (cons 0 "text")(cons 10 plr_text10)(cons 1 "Suprafata utila")(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName))))
-      (setq plr_text11 (polar x (angtof "90") (* rowHeight 32.813)))
-      (setq plr_text12 (polar plr_text11 (angtof "0") (* rowHeight 0.391)))
-      (setq text6 (entmake (list (cons 0 "text")(cons 10 plr_text12)(cons 1 "[mp]")(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName))))
+      (setq plr_text1 (polar x (angtof "90") (* rowHeight 0.24)))
+      (setq plr_text2 (polar plr_text1 (angtof "0") padding))
+      (setq text1 (entmake (list (cons 0 "text")(cons 10 plr_text2)(cons 1 "Nr.incapere")(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)(cons 7 textStyle))))
+      (setq plr_text5 (polar x (angtof "90") (* rowHeight 4.88)))
+      (setq plr_text6 (polar plr_text5 (angtof "0") padding))
+      (setq text3 (entmake (list (cons 0 "text")(cons 10 plr_text6)(cons 1 "Denumire incapere")(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)(cons 7 textStyle))))
+      (setq plr_text9 (polar x (angtof "90") (* rowHeight 11.68)))
+      (setq plr_text10 (polar plr_text9 (angtof "0") padding))
+      (setq text5 (entmake (list (cons 0 "text")(cons 10 plr_text10)(cons 1 "Suprafata utila (mp)")(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)(cons 7 textStyle))))
 )
 
 
 
-
-;; make all elements on same layer and same color (for now Tabel and white)
 (defun c:ww (/ ent angleUnits angleDirection angleBase counter py temp checkEnt newLocation plrLineNumeCamera plrLineSuprafata plrRightVertical plr_endCameraBottomRight unimportant)
       (setq suprafataUtila 0)
       (setq suprafataTotala 0)
@@ -207,19 +213,26 @@
       
       ;; end of line COO
       (setq plr_endCameraBottomRight (polar newLocation (angtof "90") rowLength ))
+      
 
       ;last bottom line
       (setq unimportant (entmake (list (cons 0 "line")(cons 10 newLocation)(cons 11 plr_endCameraBottomRight)(cons 62 layerColor)(cons 8 layerName))))
-      ;left vertical line
-      (entmake (list (cons 0 "line") (cons 10 start)(cons 11 newLocation)(cons 62 layerColor)(cons 8 layerName)))
-      ;right vertical line
-      (entmake (list (cons 0 "line") (cons 10 plr_endCameraBottomRight)(cons 11 plrRightVertical)(cons 62 layerColor)(cons 8 layerName)))
       (entmake (list (cons 0 "line") (cons 10 plrLineNumeCamera)(cons 11 (polar newLocation (angtof "90") offsetLinieNumeCamera ))(cons 62 layerColor)(cons 8 layerName)))
       (entmake (list (cons 0 "line") (cons 10 plrLineSuprafata)(cons 11 (polar newLocation (angtof "90") offsetLinieSuprafata ))(cons 62 layerColor)(cons 8 layerName)))
       (createTotalUtilaTable (cadr unimportant))
       (balc counter unimportant)
       (setq suprafataUtila 0)
       (setq suprafataTotala 0)
+
+     ;; create left vertical line
+     (entmake (list (cons 0 "line")(cons 10 left4_5)(cons 11 topLeftCorner)(cons 62 layerColor)(cons 8 layerName)))
+     ;; create top right point and then create line
+     (setq topRight (polar topLeftCorner (angtof "90") rowLength))
+     ;; create right vertical line
+     (entmake (list (cons 0 "line")(cons 10 topRight)(cons 11 right4_5)(cons 62 layerColor)(cons 8 layerName)))
+
+
+
       ;; put back old angles
       (setvar "aunits" angleUnits)
       (setvar "angdir" angleDirection)
@@ -265,7 +278,7 @@
       (setq plr_2 (polar start (angtof "90") rowLength));; primu balcon dreapta sus
       (setq plr_3 (polar globalVarLeft (angtof "180") rowHeight)) ;; ultimu balcon stanga jos - rowHeight
       (setq plr_4 (polar globalVarRight (angtof "180") rowHeight)) ;; ultimu balcon dreapta jos - rowHeight
-      (setq plr_5 (polar plr_3 (angtof "90") offsetTextNumeCamera))
+      (setq plr_5 (polar plr_3 (angtof "90") (* rowHeight 3.44)))
       (setq plr_6 (polar plr_5 (angtof "0") padding))
       (setq plr_7 (polar globalVarLeft (angtof "90") offsetLinieNumeCamera)) ;; bottom
       (setq plr_8 (polar globalVarLeft (angtof "90") offsetLinieSuprafata)) ;; bottom 
@@ -273,20 +286,15 @@
       (setq plr_10 (polar start (angtof "90") offsetLinieSuprafata)) ;; top 
 
 
-      ;;;;;; top left
-      (entmake (list (cons 0 "line")(cons 10 start)(cons 11 globalVarLeft)(cons 62 layerColor)(cons 8 layerName)))
-      (entmake (list (cons 0 "line")(cons 10 plr_2)(cons 11 globalVarRight)(cons 62 layerColor)(cons 8 layerName)))
       (entmake (list (cons 0 "line")(cons 10 plr_7)(cons 11 plr_9)(cons 62 layerColor)(cons 8 layerName)))
       (entmake (list (cons 0 "line")(cons 10 plr_8)(cons 11 plr_10)(cons 62 layerColor)(cons 8 layerName)))
-      
+      ;; bottom line under suprafata totala
       (entmake (list (cons 0 "line")(cons 10 plr_3)(cons 11 plr_4)(cons 62 layerColor)(cons 8 layerName)))
-      (entmake (list (cons 0 "line")(cons 10 plr_3)(cons 11 globalVarLeft)(cons 62 layerColor)(cons 8 layerName)))
-      (entmake (list (cons 0 "line")(cons 10 plr_4)(cons 11 globalVarRight)(cons 62 layerColor)(cons 8 layerName)))
-      (entmake (list (cons 0 "text")(cons 10 plr_6)(cons 1 (strcat "Suprafata Totala = " (rtos suprafataUtila 2 1)  " mp"))(cons 62 layerColor)(cons 8 layerName)(cons 40 textHeight)))
+      (entmake (list (cons 0 "text")(cons 10 plr_6)(cons 1 (strcat "Suprafata totala = " (rtos suprafataUtila 2 1)  " mp"))(cons 62 layerColor)(cons 8 layerName)(cons 40 textHeight)(cons 7 textStyle)))
       (createAuthorized)
 )
 
-(defun createAuthorized(/ leftStart rightStart left1_2 right1_2 left2_3 right2_3 left3_4 right3_4 left4_5 right4_5 middleTop middleBottom plr_executant plr_numeAutorizat plr_detailsAutorizat plr_receptionat plr_dataSus plr_dataMiddle plr_dataBottom)
+(defun createAuthorized(/ leftStart rightStart left1_2 right1_2 left2_3 right2_3 left3_4 right3_4 middleTop middleBottom plr_executant plr_semnaturaStampila plr_detailsAutorizat plr_receptionat plr_dataSus plr_dataMiddle plr_dataBottom)
       ;; globalVarLeft -> stanga sus la suprafata totala 
       ;; stanga sus la executant
       (setq leftStart (polar globalVarLeft (angtof "180") rowHeight))
@@ -296,44 +304,46 @@
       (setq left1_2 (polar leftStart (angtof "180") rowHeight))
       ;; dreapta jos la executant
       (setq right1_2 (polar left1_2 (angtof "90") rowLength))
-      (setq left2_3 (polar left1_2 (angtof "180") (* rowHeight 11.25)))
+      (setq left2_3 (polar left1_2 (angtof "180") (* rowHeight 7.88)))
       (setq right2_3 (polar left2_3 (angtof "90") rowLength))
-      (setq left3_4 (polar left2_3 (angtof "180") (* rowHeight 1.328)))
+      (setq left3_4 (polar left2_3 (angtof "180") rowHeight))
       (setq right3_4 (polar left3_4 (angtof "90") rowLength))
-      (setq left4_5 (polar left3_4 (angtof "180") (* rowHeight 10.78)))
+      (setq left4_5 (polar left3_4 (angtof "180") (* rowHeight 5.36)))
       (setq right4_5 (polar left4_5 (angtof "90") rowLength))
+      ;; line horizontal (left to right full) under Executant: PFA Mocanu Corneliu
       (entmake (list (cons 0 "line")(cons 10 left1_2)(cons 11 right1_2)(cons 62 layerColor)(cons 8 layerName)))
       (entmake (list (cons 0 "line")(cons 10 left2_3)(cons 11 right2_3)(cons 62 layerColor)(cons 8 layerName)))
       (entmake (list (cons 0 "line")(cons 10 left3_4)(cons 11 right3_4)(cons 62 layerColor)(cons 8 layerName)))
       (entmake (list (cons 0 "line")(cons 10 left4_5)(cons 11 right4_5)(cons 62 layerColor)(cons 8 layerName)))
-
-      (setq middleTop (polar leftStart (angtof "90") (* rowHeight 30.31)))
-      (setq middleBottom (polar left4_5 (angtof "90") (* rowHeight 30.31)))
-      (entmake (list (cons 0 "line")(cons 10 leftStart)(cons 11 left4_5)(cons 62 layerColor)(cons 8 layerName)))
+     
+      (setq middleTop (polar leftStart (angtof "90") (* rowHeight 11.92)))
+      (setq middleBottom (polar middleTop (angtof "180") rowHeight))
+      (setq middleBottomReceptionat1 (polar left3_4 (angtof "90") (* rowHeight 10.50) ))
+      (setq middleBottomReceptionat2 (polar middleBottomReceptionat1 (angtof "0") rowHeight ))
+      ;; linie intre Executant si Data: 11.11.2022
       (entmake (list (cons 0 "line")(cons 10 middleTop)(cons 11 middleBottom)(cons 62 layerColor)(cons 8 layerName)))
-      (entmake (list (cons 0 "line")(cons 10 rightStart)(cons 11 right4_5)(cons 62 layerColor)(cons 8 layerName)))
-
+      ;; linie verticala dupa Data de pe randu cu Receptionat
+      (entmake (list (cons 0 "line")(cons 10 middleBottomReceptionat1)(cons 11 middleBottomReceptionat2)(cons 62 layerColor)(cons 8 layerName)))
+     
       ; point executant
       (setq plr_executant (polar (list (car leftStart)(- (cadr leftStart) padding textHeight)) (angtof "90") autoExecutant))
-      (entmake (list (cons 0 "text")(cons 10 plr_executant)(cons 1 "Executant")(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)))
+      (entmake (list (cons 0 "text")(cons 10 plr_executant)(cons 1 textExecutant)(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)(cons 7 textStyle)))
 
-      (setq plr_numeAutorizat (polar (list (car left1_2)(- (cadr left1_2) (* padding 3) textHeight)) (angtof "90") autoName))
-      (entmake (list (cons 0 "text")(cons 10 plr_numeAutorizat)(cons 1 footerNumeAutorizat)(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)))
+      (setq plr_semnaturaStampila (polar (list (car left1_2)(- (cadr left1_2) (+ textHeight padding))) (angtof "90") autoSemnaturaStampila))
+      (entmake (list (cons 0 "text")(cons 10 plr_semnaturaStampila)(cons 1 footerSemnaturaStampila)(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)(cons 7 textStyle)))
 
-      (setq plr_detailsAutorizat (polar (list (car left1_2)(- (cadr left1_2) (* padding 6) (* textHeight 2))) (angtof "90") autoDetails))
-      (entmake (list (cons 0 "text")(cons 10 plr_detailsAutorizat)(cons 1 footerSerieAutorizat)(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)))
+      (setq plr_receptionat (polar (list (car left3_4)(+ (cadr left3_4) padding )) (angtof "90") autoReceptionat))
+      (entmake (list (cons 0 "text")(cons 10 plr_receptionat)(cons 1 footerReceptionat)(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)(cons 7 textStyle)))
 
-      (setq plr_receptionat (polar (list (car left3_4)(+ (cadr left3_4) (* padding 2.5) )) (angtof "90") autoReceptionat))
-      (entmake (list (cons 0 "text")(cons 10 plr_receptionat)(cons 1 footerReceptionat)(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)))
-
+     ;; data sus Data: 11.11.2022
       (setq plr_dataSus (polar (list (car left1_2)(+ (cadr left1_2) padding )) (angtof "90") autoDateTop))
-      (entmake (list (cons 0 "text")(cons 10 plr_dataSus)(cons 1 footerDateTopBottom)(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)))
+      (entmake (list (cons 0 "text")(cons 10 plr_dataSus)(cons 1 footerDateMiddle)(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)(cons 7 textStyle)))
 
-      (setq plr_dataMiddle (polar (list (car left2_3)(+ (cadr left2_3) (* padding 2) )) (angtof "90") autoDateMiddle))
-      (entmake (list (cons 0 "text")(cons 10 plr_dataMiddle)(cons 1 footerDateMiddle)(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)))
+      (setq plr_dataBottom (polar (list (car left3_4)(+ (cadr left3_4) padding )) (angtof "90") autoDateBottom))
+      (entmake (list (cons 0 "text")(cons 10 plr_dataBottom)(cons 1 footerDateTopBottom)(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)(cons 7 textStyle)))
 
-      (setq plr_dataBottom (polar (list (car left3_4)(+ (cadr left3_4) (* padding 2.5) )) (angtof "90") autoDateBottom))
-      (entmake (list (cons 0 "text")(cons 10 plr_dataBottom)(cons 1 footerDateTopBottom)(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)))
+      (setq plr_subReceptionat (polar left3_4 (angtof "90") (* rowHeight 0.24)))
+      (entmake (list (cons 0 "text")(cons 10 (list (car plr_subReceptionat)(- (cadr plr_subReceptionat) (+ textHeight padding))))(cons 1 textSemnaturaParafa)(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)(cons 7 textStyle)))
 
 )
 
@@ -349,14 +359,16 @@
     (setq newLocCameraNume (list (+ offsetTextNumeCamera  (car newCoo) )(- (cadr newCoo) (- rowHeight padding))))
     (if (= identifier "balcon")
         (progn
+          ;; line horizontal between balcon
           (entmake (list (cons 0 "line")(cons 10 bottomLine)(cons 11 bottomLineEnd )(cons 62 layerColor)(cons 8 layerName)))
           (setq globalVarLeft bottomLine)
           (setq globalVarRight bottomLineEnd)
         )
+        ;; line horizontal between camera
         (entmake (list (cons 0 "line")(cons 10 newCoo)(cons 11 plr )(cons 62 layerColor)(cons 8 layerName)))
     )
-    (entmake (list (cons 0 "text")(cons 1 (rtos counter 2 0))(cons 10 newLocCameraId )  (cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)))
-    (entmake (list (cons 0 "text")(cons 1 text)              (cons 10 newLocCameraNume )(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)))
+    (entmake (list (cons 0 "text")(cons 1 (rtos counter 2 0))(cons 10 newLocCameraId )  (cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)(cons 7 textStyle)))
+    (entmake (list (cons 0 "text")(cons 1 text)              (cons 10 newLocCameraNume )(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)(cons 7 textStyle)))
 )
 
 
@@ -365,14 +377,12 @@
 (defun createTotalUtilaTable(x / start plr_1 plr_2 plr_3 plr_4 plr_5 verticalBottomLineLeft horizontalBottomLine1 horizontalBottomLine2 textSuprafataTotala)
     (setq start (cdr x))
     (setq plr_1 (polar start (angtof "180") rowHeight ))
-    (setq verticalBottomLineLeft (entmake (list (cons 0 "line")(cons 10 start)(cons 11 plr_1)(cons 62 layerColor)(cons 8 layerName))))
     (setq plr_2 (polar plr_1 (angtof "90") rowLength ))
+    ;; linie sub Suprafata utila = ....
     (setq horizontalBottomLine1 (entmake (list (cons 0 "line")(cons 10 plr_1)(cons 11 plr_2)(cons 62 layerColor)(cons 8 layerName))))
-    (setq plr_3 (polar start (angtof "90") rowLength ))
-    (setq horizontalBottomLine2 (entmake (list (cons 0 "line")(cons 10 plr_3)(cons 11 plr_2)(cons 62 layerColor)(cons 8 layerName))))
-    (setq plr_4 (polar plr_1 (angtof "90") offsetTextNumeCamera))
+    (setq plr_4 (polar plr_1 (angtof "90") (* rowHeight 3.44)))
     (setq plr_5 (polar plr_4 (angtof "0") padding))
-    (setq textSuprafataTotala (entmake (list (cons 0 "text")(cons 10 plr_5)(cons 1 (strcat "Suprafata Utila = " (rtos suprafataUtila 2 1)  " mp"))(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName))))
+    (setq textSuprafataTotala (entmake (list (cons 0 "text")(cons 10 plr_5)(cons 1 (strcat "Suprafata utila = " (rtos suprafataUtila 2 1)  " mp"))(cons 40 textHeight)(cons 62 layerColor)(cons 8 layerName)(cons 7 textStyle))))
     (princ)
 )
 
@@ -387,10 +397,6 @@
 ;;; ===========================================================
 ;;; ===========================================================
 
-
-
-
-;;; GEAM
 
 
 
@@ -467,6 +473,7 @@
 
 
 
+
 ;;; ===========================================================
 ;;; ===========================================================
 ;;; ===========================================================
@@ -480,6 +487,7 @@
 
 
 
+;;; USA
 
 
 (setq layerNameUsiGeam "UsiGeamuri")
@@ -633,6 +641,3 @@
      (setvar "angbase" angleBase)
      (princ)
 )
-
-
-
